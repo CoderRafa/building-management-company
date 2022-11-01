@@ -1,1 +1,1 @@
-# building-managing-company
+# building-management-company
