@@ -1,4 +1,4 @@
-package models
+package com.gmail.rafengimprove.building.management.company.model
 
 import java.time.LocalDate
 
@@ -10,7 +10,7 @@ data class Building(
     val distanceFromCityCenter: Double,
     val neighbourhood: String,
     val numberOfFloors: Int,
-    val numberOfApartmentsByType: List<Pair<ApartmentType, Int>>,
+    val numberOfApartmentsByType: List<Apartment>,
     val totalNumberOfApartments: Int,
     val numberOfElevators: Int,
     val laundryRoom: Boolean,
@@ -18,26 +18,10 @@ data class Building(
     val concierge: Boolean,
     val gym: Boolean,
     val swimmingPool: Boolean,
-    val nearestSupermarket: Double,
-    val nearestMall: Double,
-    val nearestRestaurant: Double,
-    val nearestCoffeeShop: Double,
-    val nearestPub: Double,
-    val nearestPublicTransport: Double,
-    val nearestPark: Double,
-    val nearestPlayground: Double,
-    val nearestKindergarten: Double,
-    val nearestSchool: Double,
+    val publicTransport: List<PublicTransport>,
+    val placesOfInterest: List<PlacesOfInterest>
 ) {
 
-}
-
-enum class ApartmentType {
-    STUDIO,
-    LOFT,
-    PENTHOUSE,
-    ONE_BEDROOM,
-    TWO_BEDROOM
 }
 
 enum class BuildingMaterialType {

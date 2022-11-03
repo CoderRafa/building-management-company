@@ -1,6 +1,11 @@
-package models
+package com.gmail.rafengimprove.building.management.company.model
+
+import java.time.LocalDate
 
 data class Apartment(
+    val entrance: String,
+    val floor: Int,
+    val apartmentNumber: Int,
     val apartmentType: ApartmentType,
     val areaInSquareMeters: Double,
     val numberOfRooms: Int,
@@ -8,27 +13,37 @@ data class Apartment(
     val ceilingHeight: Double,
     val windowsType: List<WindowType>,
     val balcony: Boolean,
-    val furnished: Boolean,
-    val electricalAppliances: List<ElectricalAppliancesType>,
-    val view: ViewType,
+    val furniture: List<Furniture>,
+    val electricalAppliances: List<ElectricalAppliances>,
+    val view: List<ViewType>,
     val heatInsulation: Boolean,
     val soundInsulation: Boolean,
     val facing: List<FacingType>,
     val heating: Boolean,
     val AC: Boolean,
-    val energyEfficient: Boolean,
     val smoking: Boolean,
     val petFriendly: Boolean,
     val internet: Boolean,
-    val parkingPlace: Boolean,
-    val primePrice: Double,
-    val totalPrice: Double,
-    val profit: Double,
+    val parkingPlace: ParkingPlace,
     val includedUtilityBills: List<UtilityBillType>,
     val depositAmount: Double,
-    val upfrontPayment: Double
-) {
+    val upfrontPayment: Double,
+    val availability: Boolean,
+    val availableFrom: LocalDate
+)  {
+    private val primePrice: Double = 0.0
+    private val margin: Double = 0.0
+    private val expenses: Double = 0.0
+    val rentAmount = primePrice + margin
+    val profit = margin - expenses
+}
 
+enum class ApartmentType {
+    STUDIO,
+    LOFT,
+    PENTHOUSE,
+    ONE_BEDROOM,
+    TWO_BEDROOM
 }
 
 enum class UtilityBillType {
@@ -40,41 +55,6 @@ enum class UtilityBillType {
     HEATING
 }
 
-enum class ElectricalAppliancesType {
-    WASHING_MACHINE,
-    DISH_WASHER,
-    FRIDGE,
-    FREEZER,
-    OVEN,
-    STOVE,
-    COOKER,
-    DEEP_FRYER,
-    ELECTRIC_KETTLE,
-    KITCHEN_HOOD,
-    DRYER,
-    MICROWAVE,
-    TOASTER,
-    BLENDER,
-    HAND_MIXER,
-    STAND_MIXER,
-    FOOD_PROCESSOR,
-    COFFEE_MACHINE,
-    BREAD_MACHINE,
-    ELECTRIC_GRILL,
-    MULTI_COOKER,
-    HAIR_DRYER,
-    IRON,
-    WATER_HEATER,
-    WATER_COOLER,
-    STEAMER,
-    VACUUM_CLEANER,
-    TV,
-    SMART_TV,
-    SMART_HOME,
-    AIR_PURIFIER,
-    HUMIDIFIER,
-    DEHUMIDIFIER
-}
 
 enum class FacingType {
     EAST,
