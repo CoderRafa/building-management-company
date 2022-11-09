@@ -1,4 +1,4 @@
-package com.gmail.rafengimprove.building.managing.company
+package com.gmail.rafengimprove.building.management.company
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
