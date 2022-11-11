@@ -1,6 +1,13 @@
 package com.gmail.rafengimprove.building.management.company.model.example
 
-import com.gmail.rafengimprove.building.management.company.model.*
+import com.gmail.rafengimprove.building.management.company.model.ApartmentType
+import com.gmail.rafengimprove.building.management.company.model.ElectricalAppliances
+import com.gmail.rafengimprove.building.management.company.model.FacingType
+import com.gmail.rafengimprove.building.management.company.model.Furniture
+import com.gmail.rafengimprove.building.management.company.model.ParkingPlace
+import com.gmail.rafengimprove.building.management.company.model.RenovationType
+import com.gmail.rafengimprove.building.management.company.model.UtilityBillType
+import com.gmail.rafengimprove.building.management.company.model.ViewType
 import java.time.LocalDate
 
 data class Apartment(
@@ -28,7 +35,10 @@ data class Apartment(
 )
 
 fun Apartment.isRequiredApartmentType(requiredApartmentType: ApartmentType) = apartmentType == requiredApartmentType
-fun Apartment.isRequiredArea(area: Double) = areaInSquareMeters == area
+fun Apartment.isRequiredArea(
+    area: Double = 0.0,
+    condition: (Double, Double) -> Boolean = { findArea: Double, appArea: Double -> findArea <= appArea && appArea <= findArea + (findArea * 0.2) }
+) = condition(area, areaInSquareMeters)
 fun Apartment.requiredRenovation(requiredRenovation: RenovationType) = renovation == requiredRenovation
 fun Apartment.isHeatInsulated() = heatInsulation
 fun Apartment.isSoundInsulated() = soundInsulation
@@ -42,7 +52,8 @@ fun Apartment.isAvailable() = availability
 fun Apartment.hasBalcony() = rooms.any { it.hasBalcony() }
 fun Apartment.hasSeeView() = lazy { rooms.any { it.hasView(ViewType.SEA_VIEW) } }.value
 fun Apartment.hasView(view: ViewType) = rooms.any { it.hasView(view) }
-fun Apartment.includesUtilityBills(includesUtilityBills: List<UtilityBillType>) = includesUtilityBills.all{ includedUtilityBills.contains(it) }
+fun Apartment.includesUtilityBills(includesUtilityBills: List<UtilityBillType>) =
+    includesUtilityBills.all { includedUtilityBills.contains(it) }
 
 data class Room(
     val windows: List<Window>,
@@ -67,11 +78,12 @@ data class Window(
     val glassesType: WindowGlassesType,
     val energyEfficient: Boolean,
     val width: Double,
-    val height: Double)
+    val height: Double
+)
 
 
 enum class RoomType {
-    BEDROOM, BATHROOM, KITCHEN, HALL, LIVING_ROOM, STUDY, DINING_ROOM,TOILET
+    BEDROOM, BATHROOM, KITCHEN, HALL, LIVING_ROOM, STUDY, DINING_ROOM, TOILET
 }
 
 enum class MaterialType {

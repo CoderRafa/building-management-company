@@ -19,4 +19,28 @@ internal class ApartmentFilterTest {
                 }
         ).isNotEmpty
     }
+
+    @Test
+    fun `Happy pass - find an apartment with required area`() {
+        val apps = listOf<Apartment>()
+
+        Assertions.assertThat(
+            apps
+                .filter { apartment ->
+                    apartment.isRequiredArea(20.0)
+                }
+        ).isNotEmpty
+    }
+
+    @Test
+    fun `Happy pass - find an apartment with required area and custom condition`() {
+        val apps = listOf<Apartment>()
+
+        Assertions.assertThat(
+            apps
+                .filter { apartment ->
+                    apartment.isRequiredArea(20.0) { needArea, appArea -> needArea >= appArea }
+                }
+        ).isNotEmpty
+    }
 }
