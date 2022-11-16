@@ -1,8 +1,8 @@
 package com.gmail.rafengimprove.building.management.company.model
 
 data class ParkingPlace(
-    val length: Double,
-    val width: Double,
+    val parkingPlaceLength: Double,
+    val parkingPlaceWidth: Double,
     val parkingPlaceType: ParkingPlaceType,
     val covered: Boolean,
     val security: Boolean
