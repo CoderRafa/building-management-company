@@ -1,13 +1,7 @@
 package com.gmail.rafengimprove.building.management.company.model.example
 
-import com.gmail.rafengimprove.building.management.company.model.ApartmentType
-import com.gmail.rafengimprove.building.management.company.model.ElectricalAppliances
-import com.gmail.rafengimprove.building.management.company.model.FacingType
-import com.gmail.rafengimprove.building.management.company.model.Furniture
-import com.gmail.rafengimprove.building.management.company.model.ParkingPlace
-import com.gmail.rafengimprove.building.management.company.model.RenovationType
-import com.gmail.rafengimprove.building.management.company.model.UtilityBillType
-import com.gmail.rafengimprove.building.management.company.model.ViewType
+import com.gmail.rafengimprove.building.management.company.model.*
+import com.gmail.rafengimprove.building.management.company.model.ParkingPlaceType.STREET
 import java.time.LocalDate
 
 data class Apartment(
@@ -39,6 +33,7 @@ fun Apartment.isRequiredArea(
     area: Double = 0.0,
     condition: (Double, Double) -> Boolean = { findArea: Double, appArea: Double -> findArea <= appArea && appArea <= findArea + (findArea * 0.2) }
 ) = condition(area, areaInSquareMeters)
+
 fun Apartment.requiredRenovation(requiredRenovation: RenovationType) = renovation == requiredRenovation
 fun Apartment.isHeatInsulated() = heatInsulation
 fun Apartment.isSoundInsulated() = soundInsulation
@@ -47,7 +42,38 @@ fun Apartment.hasAC() = AC
 fun Apartment.isSmoking() = smoking
 fun Apartment.isPetFriendly() = petFriendly
 fun Apartment.hasWiFi() = wifi
-fun Apartment.requiredParkingPlace(requiredParkingPlace: ParkingPlace) = parkingPlace == requiredParkingPlace
+fun Apartment.requiredParkingPlace(
+    length: Double = 0.0,
+    width: Double = 0.0,
+    type: ParkingPlaceType = STREET,
+    covered: Boolean = false,
+    security: Boolean = false,
+    condition: (
+        Double, Double,
+        Double, Double,
+        ParkingPlaceType, ParkingPlaceType,
+        Boolean, Boolean,
+        Boolean, Boolean,
+    ) -> Boolean = {
+            parkingLength: Double, requiredLength: Double,
+            parkingWidth: Double, requiredWidth: Double,
+            parkingType: ParkingPlaceType, requiredParkingType: ParkingPlaceType,
+            isCovered: Boolean, coverRequirement: Boolean,
+            isSecure: Boolean, securityRequirement: Boolean,
+        ->
+        requiredLength <= parkingLength && parkingLength <= requiredLength + (requiredLength * 0.2) &&
+                requiredWidth <= parkingWidth && parkingWidth <= requiredWidth + (requiredWidth * 0.2) &&
+                parkingType == requiredParkingType && isCovered == coverRequirement &&
+                isSecure == securityRequirement
+    }
+) = condition(
+    length, parkingPlace.parkingPlaceLength,
+    width, parkingPlace.parkingPlaceWidth,
+    type, parkingPlace.parkingPlaceType,
+    covered, parkingPlace.covered,
+    security, parkingPlace.security
+)
+
 fun Apartment.isAvailable() = availability
 fun Apartment.hasBalcony() = rooms.any { it.hasBalcony() }
 fun Apartment.hasSeeView() = lazy { rooms.any { it.hasView(ViewType.SEA_VIEW) } }.value
