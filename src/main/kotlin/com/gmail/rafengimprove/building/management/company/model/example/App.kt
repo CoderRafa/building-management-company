@@ -2,7 +2,9 @@ package com.gmail.rafengimprove.building.management.company.model.example
 
 import com.gmail.rafengimprove.building.management.company.model.*
 import com.gmail.rafengimprove.building.management.company.model.ParkingPlaceType.STREET
+import com.gmail.rafengimprove.building.management.company.model.example.FilterType.*
 import java.time.LocalDate
+import java.util.*
 
 data class Apartment(
     val entrance: String,
@@ -42,13 +44,14 @@ fun Apartment.hasAC() = AC
 fun Apartment.isSmoking() = smoking
 fun Apartment.isPetFriendly() = petFriendly
 fun Apartment.hasWiFi() = wifi
-fun Apartment.requiredParkingPlace(
-    length: Double = 0.0,
-    width: Double = 0.0,
-    type: ParkingPlaceType = STREET,
-    covered: Boolean = false,
-    security: Boolean = false,
-    condition: (
+
+data class RequiredParkingPlaceParameters(
+    val length: Double = 0.0,
+    val width: Double = 0.0,
+    val type: ParkingPlaceType = STREET,
+    val covered: Boolean = false,
+    val security: Boolean = false,
+    val condition: (
         Double, Double,
         Double, Double,
         ParkingPlaceType, ParkingPlaceType,
@@ -66,13 +69,88 @@ fun Apartment.requiredParkingPlace(
                 parkingType == requiredParkingType && isCovered == coverRequirement &&
                 isSecure == securityRequirement
     }
-) = condition(
-    length, parkingPlace.parkingPlaceLength,
-    width, parkingPlace.parkingPlaceWidth,
-    type, parkingPlace.parkingPlaceType,
-    covered, parkingPlace.covered,
-    security, parkingPlace.security
 )
+
+interface ParkingParametersComparator {
+    fun compare(one: Any, two: Any): Boolean
+}
+
+class LengthParkingParametersComparator : ParkingParametersComparator {
+    override fun compare(one: Any, two: Any): Boolean {
+        return one as Double <= two as Double && two <= one + (one * 0.2)
+    }
+}
+
+class WidthParkingParametersComparator : ParkingParametersComparator {
+    override fun compare(one: Any, two: Any): Boolean {
+        return one as Double <= two as Double && two <= one + (one * 0.2)
+    }
+}
+
+class ParkingTypeParkingParametersComparator : ParkingParametersComparator {
+    override fun compare(one: Any, two: Any): Boolean {
+        return one as ParkingPlaceType == two as ParkingPlaceType
+    }
+}
+
+class CoveredParkingParametersComparator : ParkingParametersComparator {
+    override fun compare(one: Any, two: Any): Boolean {
+        return one as Boolean == two as Boolean
+    }
+}
+
+class SecuredParkingParametersComparator : ParkingParametersComparator {
+    override fun compare(one: Any, two: Any): Boolean {
+        return one as Boolean == two as Boolean
+    }
+}
+
+class ParkingPlaceFilter(
+    val comparators: EnumMap<FilterType, ParkingParametersComparator>
+) {
+    fun compareLength(requiredLength: Double, length: Double): Boolean {
+        return comparators[LENGTH]?.compare(requiredLength, length) ?: false
+    }
+    fun compareWidth(requiredWidth: Double, width: Double): Boolean {
+        return comparators[WIDTH]?.compare(requiredWidth, width) ?: false
+    }
+    fun compareParkingType(requiredParkingType: Double, parkingType: Double): Boolean {
+        return comparators[TYPE]?.compare(requiredParkingType, parkingType) ?: false
+    }
+    fun compareCovered(requiredCover: Boolean, cover: Boolean): Boolean {
+        return comparators[COVERED]?.compare(requiredCover, cover) ?: false
+    }
+    fun compareSecured(requiredSecurity: Boolean, security: Boolean): Boolean {
+        return comparators[SECURED]?.compare(requiredSecurity, security) ?: false
+    }
+
+}
+
+enum class FilterType {
+    LENGTH, WIDTH, TYPE, COVERED, SECURED
+}
+
+
+fun Apartment.requiredParkingPlace(requiredParkingPlaceParameters: RequiredParkingPlaceParameters) =
+    with(requiredParkingPlaceParameters) {
+        val parkingPlaceFilter = prepareParkingPlaceFilters()
+            condition(
+                length, parkingPlace.parkingPlaceLength,
+                width, parkingPlace.parkingPlaceWidth,
+                type, parkingPlace.parkingPlaceType,
+                covered, parkingPlace.covered,
+                security, parkingPlace.security
+            )
+    }
+
+fun prepareParkingPlaceFilters() =
+    ParkingPlaceFilter(EnumMap<FilterType, ParkingParametersComparator>(FilterType::class.java)).apply {
+        this.comparators[LENGTH] = LengthParkingParametersComparator()
+        this.comparators[WIDTH] = WidthParkingParametersComparator()
+        this.comparators[TYPE] = ParkingTypeParkingParametersComparator()
+        this.comparators[COVERED] = CoveredParkingParametersComparator()
+        this.comparators[SECURED] = SecuredParkingParametersComparator()
+    }
 
 fun Apartment.isAvailable() = availability
 fun Apartment.hasBalcony() = rooms.any { it.hasBalcony() }
