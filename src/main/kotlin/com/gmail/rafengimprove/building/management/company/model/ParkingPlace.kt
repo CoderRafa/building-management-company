@@ -9,6 +9,7 @@ data class ParkingPlace(
 ){}
 
 enum class ParkingPlaceType {
+    DEFAULT,
     STREET,
     PARKING_LOT,
     SINGLE_LEVEL_PARKING_GARAGE,
